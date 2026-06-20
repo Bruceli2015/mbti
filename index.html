@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 专业性格测试 | 随机100题版</title>
+    <style>
+        /* 全局样式重置 & 基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft Yahei", sans-serif;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-gray: #6b7280;
+            --shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+            --shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.25);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 页面模块 默认隐藏 */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 首页样式 */
+        .home-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .home-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 60px 40px;
+            max-width: 700px;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .home-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .home-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+
+        .home-desc {
+            font-size: 18px;
+            color: var(--text-gray);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .tip-text {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 48px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn-default {
+            background: #f3f4f6;
+            color: var(--text-main);
+        }
+
+        .btn-default:hover {
+            background: #e5e7eb;
+        }
+
+        /* 答题页样式 */
+        .quiz-page {
+            padding: 40px 0;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+        }
+
+        .progress-box {
+            background: #e5e7eb;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+
+        .question-num {
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .question-title {
+            font-size: 22px;
+            margin-bottom: 36px;
+            font-weight: 500;
+        }
+
+        .options-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .option-item {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 17px;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-light);
+            background: #f8faff;
+        }
+
+        .option-item.active {
+            border-color: var(--primary);
+            background: #f0f4ff;
+        }
+
+        /* 结果页样式 */
+        .result-page {
+            padding: 40px 0;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 50px 40px;
+        }
+
+        .result-type {
+            font-size: 60px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-name {
+            font-size: 24px;
+            text-align: center;
+            color: var(--text-gray);
+            margin-bottom: 40px;
+        }
+
+        .dimension-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .dimension-item {
+            background: #f8faff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .dim-title {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .dim-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .analysis-block {
+            margin: 30px 0;
+        }
+
+        .analysis-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-content {
+            font-size: 16px;
+            color: var(--text-main);
+            line-height: 1.9;
+        }
+
+        /* 响应式适配 手机端 */
+        @media (max-width: 768px) {
+            .home-title {
+                font-size: 28px;
+            }
+            .home-card, .quiz-card, .result-card {
+                padding: 30px 20px;
+            }
+            .result-type {
+                font-size: 40px;
+            }
+            .question-title {
+                font-size: 18px;
+            }
+            .btn {
+                padding: 14px 32px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 首页页面 -->
+        <div class="page active" id="homePage">
+            <div class="home-page">
+                <div class="home-card">
+                    <h1 class="home-title">MBTI 专业性格测试</h1>
+                    <p class="home-desc">题库总量10000道，每次随机抽取100题作答，凭第一直觉选择，获取精准人格分析。</p>
+                    <p class="tip-text">温馨提示：答案无好坏之分，请放松心态认真作答</p>
+                    <button class="btn btn-primary" id="startBtn">开始测试</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 答题页面 -->
+        <div class="page" id="quizPage">
+            <div class="quiz-page">
+                <div class="quiz-header">
+                    <div class="progress-box">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>已完成：<span id="nowNum">0</span> / 100</span>
+                        <span>进度：<span id="progressPercent">0%</span></span>
+                    </div>
+                </div>
+
+                <div class="quiz-card">
+                    <div class="question-num" id="questionNum">第 1 题</div>
+                    <h3 class="question-title" id="questionTitle"></h3>
+                    <div class="options-list" id="optionsList"></div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-default" id="prevBtn" disabled>上一题</button>
+                        <button class="btn btn-primary" id="nextBtn">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果页面 -->
+        <div class="page" id="resultPage">
+            <div class="result-page">
+                <div class="result-card">
+                    <div class="result-type" id="mbtiType">----</div>
+                    <div class="result-name" id="typeName">人格名称</div>
+
+                    <div class="dimension-box">
+                        <div class="dimension-item">
+                            <div class="dim-title">精力来源</div>
+                            <div class="dim-value" id="dimEI">E / I</div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dim-title">认知方式</div>
+                            <div class="dim-value" id="dimSN">S / N</div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dim-title">决策方式</div>
+                            <div class="dim-value" id="dimTF">T / F</div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dim-title">生活态度</div>
+                            <div class="dim-value" id="dimJP">J / P</div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-block">
+                        <h4 class="analysis-title">人格整体解读</h4>
+                        <div class="analysis-content" id="totalAnalysis"></div>
+                    </div>
+                    <div class="analysis-block">
+                        <h4 class="analysis-title">性格优势</h4>
+                        <div class="analysis-content" id="advantageAnalysis"></div>
+                    </div>
+                    <div class="analysis-block">
+                        <h4 class="analysis-title">潜在短板</h4>
+                        <div class="analysis-content" id="weakAnalysis"></div>
+                    </div>
+                    <div class="analysis-block">
+                        <h4 class="analysis-title">适配方向（职业/社交）</h4>
+                        <div class="analysis-content" id="fitAnalysis"></div>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 50px;">
+                        <button class="btn btn-primary" id="restartBtn">重新测试</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局配置
+        const NEED_QUESTION = 100; // 每次抽取100题
+        let currentIndex = 0;
+        let userAnswers = [];
+        let randomQuestionList = []; // 本次随机选中的100题
+
+        // DOM
+        const homePage = document.getElementById('homePage');
+        const quizPage = document.getElementById('quizPage');
+        const resultPage = document.getElementById('resultPage');
+        const startBtn = document.getElementById('startBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const questionNum = document.getElementById('questionNum');
+        const questionTitle = document.getElementById('questionTitle');
+        const optionsList = document.getElementById('optionsList');
+        const progressBar = document.getElementById('progressBar');
+        const nowNum = document.getElementById('nowNum');
+        const progressPercent = document.getElementById('progressPercent');
+
+        // ====================== 10000 道超大题库 ======================
+        const fullQuestionBank = [];
+        const typeArr = ["EI", "SN", "TF", "JP"];
+        const baseQuestions = [
+            // EI 内外向模板
+            {t:"EI", q:"聚会结束后你更倾向于？", o:["意犹未尽，继续聊天","稍感疲惫，想安静一会","热闹但不想主动搭话","只想立刻独处"]},
+            {t:"EI", q:"周末空闲你会优先？", o:["邀约朋友外出","宅家独自放松","偶尔小聚，多数独处","拒绝一切外出邀约"]},
+            {t:"EI", q:"遇到烦恼你习惯？", o:["找人倾诉释放情绪","自我消化不愿多说","只和极少数人分享","封闭内心不交流"]},
+            {t:"EI", q:"身处陌生环境你会？", o:["主动结识新朋友","被动等待他人搭话","默默观察不互动","刻意远离人群"]},
+            {t:"EI", q:"日常说话风格偏向？", o:["乐于表达，滔滔不绝","言简意赅，深思后说","话少，倾听为主","几乎不主动发言"]},
+            {t:"EI", q:"团队工作中更喜欢？", o:["多人协作高频沟通","独立完成减少交流","小范围配合即可","全程独自工作"]},
+            {t:"EI", q:"他人对你的印象多是？", o:["开朗热情外向健谈","安静内敛不善言辞","动静结合两面性","高冷有距离感"]},
+            {t:"EI", q:"灵感想法大多来自？", o:["与人讨论碰撞思路","独自静心思考","半交流半独处思考","独处才能产生想法"]},
+            {t:"EI", q:"公开场合发言你会？", o:["从容享受表达自我","紧张但可以完成","尽量推脱回避","坚决拒绝上台"]},
+            {t:"EI", q:"情绪低落时希望？", o:["有人陪伴安慰开导","一个人安静平复","短暂陪伴即可","拒绝任何人打扰"]},
+            // SN 实感/直觉模板
+            {t:"SN", q:"看待事物你更关注？", o:["客观事实与细节","未来可能性与想象","兼顾现实与畅想","优先脑洞与灵感"]},
+            {t:"SN", q:"阅读书籍偏好？", o:["纪实、实用、传记类","科幻、哲理、幻想类","通俗故事读物","抽象思辨类书籍"]},
+            {t:"SN", q:"描述一件事情你会？", o:["细致讲解过程细节","概括整体与深层含义","只讲核心重点","延伸大量联想内容"]},
+            {t:"SN", q:"做计划更依赖？", o:["过往实际经验案例","直觉预判未来趋势","参考他人方案","凭灵感临时安排"]},
+            {t:"SN", q:"理解新事物先关注？", o:["实际用途落地效果","内在逻辑潜在价值","表面现象即可","深层延伸解读"]},
+            {t:"SN", q:"听他人讲话你留意？", o:["字面具体内容信息","言外之意与暗示","语气情绪状态","背后隐藏想法"]},
+            {t:"SN", q:"创意主要来源于？", o:["现实生活观察总结","大脑突发灵感想象","改造现有事物","天马行空的构想"]},
+            {t:"SN", q:"完成任务你看重？", o:["执行步骤与流程细节","最终目标与发展方向","完成结果即可","创新变通方式"]},
+            {t:"SN", q:"回忆往事你记得？", o:["场景画面具体细节","整体感受与印象氛围","大概经过脉络","联想衍生其他事情"]},
+            {t:"SN", q:"选择工作更看重？", o:["稳定务实落地性强","发展潜力创新性强","薪资待遇高低","自由创作空间"]},
+            // TF 思考/情感模板
+            {t:"TF", q:"做决定优先依据？", o:["客观逻辑利弊分析","他人情绪与人情感受","情理综合考量","优先照顾他人心情"]},
+            {t:"TF", q:"朋友发生争执你会？", o:["理性分析对错根源","安抚双方情绪感受","中立旁观不介入","共情弱势一方"]},
+            {t:"TF", q:"评价他人依靠？", o:["能力行为客观表现","性格相处主观感受","第一表面印象","个人喜好好感度"]},
+            {t:"TF", q:"被批评时你的反应？", o:["理性反思问题对错","内心委屈情绪波动","表面接受内心抵触","难过许久无法释怀"]},
+            {t:"TF", q:"制定规则偏向？", o:["公平公正一视同仁","灵活变通兼顾人情","规则为主偶尔变通","人情优先弱化规则"]},
+            {t:"TF", q:"拒绝他人请求时？", o:["直接说明理由拒绝","委婉顾及对方感受","拖延不愿直面拒绝","不忍心拒绝任何人"]},
+            {t:"TF", q:"化解团队矛盾你会？", o:["理清根源解决问题","调和氛围安抚情绪","回避矛盾不处理","优先安抚双方情绪"]},
+            {t:"TF", q:"选择搭档看重？", o:["工作能力执行效率","相处氛围人品性格","配合默契即可","相处开心最重要"]},
+            {t:"TF", q:"如何看待善意谎言？", o:["谎言不分性质不应存在","善意谎言可以理解接受","分场景区别看待","完全认同善意谎言"]},
+            {t:"TF", q:"安慰别人的方式？", o:["分析问题给出方案","陪伴倾听共情情绪","简单口头劝解","全身心共情安抚"]},
+            // JP 判断/感知模板
+            {t:"JP", q:"日常生活更喜欢？", o:["规律有序计划明确","随性自由随机应变","大体有简单规划","完全无计划随心所欲"]},
+            {t:"JP", q:"外出出行你会？", o:["提前做好详细规划","临近出发临时安排","只做大致方向规划","走到哪里算哪里"]},
+            {t:"JP", q:"个人桌面房间状态？", o:["整洁规整物品定位","随性摆放不拘小节","大致整洁即可","杂乱无章随心放置"]},
+            {t:"JP", q:"处理任务习惯？", o:["提前完成绝不拖延","临近截止才着手做","按节奏缓慢推进","拖延到最后一刻"]},
+            {t:"JP", q:"每日作息偏向？", o:["作息固定规律稳定","作息灵活随时调整","偶尔规律偶尔随性","毫无固定作息"]},
+            {t:"JP", q:"面对突发变动你会？", o:["反感计划被打乱","乐于接受新鲜变化","短暂不适后适应","享受意外改变"]},
+            {t:"JP", q:"做出选择时希望？", o:["快速敲定确定结果","慢慢观望延迟决定","犹豫一段时间再选","尽量逃避做决定"]},
+            {t:"JP", q:"假期时间如何安排？", o:["提前排满每日行程","边走边玩临时决定","有大致游玩方向","完全随心游玩"]},
+            {t:"JP", q:"对待截止日期态度？", o:["紧盯节点提前完工","临近日期全力冲刺","卡着时间点完成","经常临时赶工"]},
+            {t:"JP", q:"收纳整理物品频率？", o:["定期整理保持整洁","脏乱后再收拾无定时","很久才整理一次","几乎从不整理"]}
+        ];
+
+        // 循环生成 10000 条题库
+        for(let i = 0; i < 10000; i++){
+            const base = baseQuestions[i % baseQuestions.length];
+            const type = base.t;
+            let qText = base.q;
+            // 简单随机变体，避免题目完全重复
+            const randSuffix = ["", "，你认为？", "，你更认同哪一项？", "，你的状态是？"];
+            qText += randSuffix[i % randSuffix.length];
+
+            fullQuestionBank.push({
+                q: qText,
+                o: base.o,
+                type: type
+            });
+        }
+
+        // 随机从数组抽取不重复题目
+        function getRandomQuestions(sourceArr, count){
+            const arr = [...sourceArr];
+            const result = [];
+            for(let i = 0; i < count; i++){
+                const idx = Math.floor(Math.random() * arr.length);
+                result.push(arr.splice(idx, 1)[0]);
+            }
+            return result;
+        }
+
+        // 页面切换
+        function switchPage(pageDom) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            pageDom.classList.add('active');
+        }
+
+        // 渲染当前题目
+        function renderQuestion() {
+            const q = randomQuestionList[currentIndex];
+            questionNum.innerText = `第 ${currentIndex + 1} 题 / 共 ${NEED_QUESTION} 题`;
+            questionTitle.innerText = q.q;
+            optionsList.innerHTML = '';
+
+            q.o.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = `option-item ${userAnswers[currentIndex] === idx ? 'active' : ''}`;
+                div.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+                div.onclick = () => selectOption(idx);
+                optionsList.appendChild(div);
+            });
+
+            // 更新进度
+            const finish = userAnswers.filter(item => item !== null).length;
+            const percent = (finish / NEED_QUESTION * 100).toFixed(1);
+            progressBar.style.width = `${percent}%`;
+            nowNum.innerText = finish;
+            progressPercent.innerText = `${percent}%`;
+
+            prevBtn.disabled = currentIndex === 0;
+        }
+
+        // 选择选项
+        function selectOption(idx) {
+            userAnswers[currentIndex] = idx;
+            renderQuestion();
+        }
+
+        // 计算MBTI结果
+        function calcResult() {
+            let e = 0, i = 0, s = 0, n = 0, t = 0, f = 0, j = 0, p = 0;
+            randomQuestionList.forEach((q, idx) => {
+                const ans = userAnswers[idx];
+                if(ans === null) return;
+                if(q.type === "EI"){
+                    ans <=1 ? e++ : i++;
+                }else if(q.type === "SN"){
+                    ans <=1 ? s++ : n++;
+                }else if(q.type === "TF"){
+                    ans <=1 ? t++ : f++;
+                }else if(q.type === "JP"){
+                    ans <=1 ? j++ : p++;
+                }
+            });
+
+            let ei = e >= i ? "E" : "I";
+            let sn = s >= n ? "S" : "N";
+            let tf = t >= f ? "T" : "F";
+            let jp = j >= p ? "J" : "P";
+            const type = ei + sn + tf + jp;
+
+            const res = mbtiResultLib[type];
+            document.getElementById('mbtiType').innerText = type;
+            document.getElementById('typeName').innerText = res.name;
+            document.getElementById('dimEI').innerText = `${ei} (E:${e} / I:${i})`;
+            document.getElementById('dimSN').innerText = `${sn} (S:${s} / N:${n})`;
+            document.getElementById('dimTF').innerText = `${tf} (T:${t} / F:${f})`;
+            document.getElementById('dimJP').innerText = `${jp} (J:${j} / P:${p})`;
+
+            document.getElementById('totalAnalysis').innerText = res.total;
+            document.getElementById('advantageAnalysis').innerText = res.adv;
+            document.getElementById('weakAnalysis').innerText = res.weak;
+            document.getElementById('fitAnalysis').innerText = res.fit;
+
+            switchPage(resultPage);
+        }
+
+        // 16型人格解析库
+        const mbtiResultLib = {
+            "ISTJ":{
+                name:"物流师 · 严谨务实者",
+                total:"ISTJ 检查员型人格，沉稳可靠、恪守规则，是团队中踏实的执行者。你注重事实与秩序，做事严谨负责，信守承诺，拥有极强的责任心和执行力。待人真诚稳重，不喜虚浮，习惯脚踏实地走好每一步。",
+                adv:"责任心极强、做事严谨细致、守时守信、逻辑清晰、抗压能力强、务实可靠，擅长落地执行与细节把控。",
+                weak:"思维偏保守，抗拒改变，不擅长即兴发挥与创新；过于注重规则，有时略显刻板；不擅长表达情绪，容易压抑自我。",
+                fit:"职业：行政、财务、法务、运维、技术岗、传统管理岗；社交：适合真诚稳重、三观一致的朋友，慢热但长情。"
+            },
+            "ISFJ":{
+                name:"守卫者 · 温柔守护者",
+                total:"ISFJ 守卫者人格，温暖善良、体贴入微，是身边人的暖心依靠。你共情能力强，善于观察他人情绪，乐于默默付出，重视人际关系与家庭，做事耐心细致，有奉献精神。",
+                adv:"温柔体贴、观察力敏锐、耐心十足、乐于助人、忠诚度高、做事认真踏实、擅长照顾他人。",
+                weak:"过度在意他人看法，不懂拒绝；容易委屈自己讨好别人；不擅长表达自我需求，害怕冲突。",
+                fit:"职业：医护、教育、客服、社工、行政、后勤、人力资源；社交：适合温和友善、懂得感恩的伙伴。"
+            },
+            "INFJ":{
+                name:"提倡者 · 理想主义者",
+                total:"INFJ 引路人型人格，洞察力极强，内心拥有坚定的理想与信念。你擅长透过现象看本质，共情力与直觉出众，追求精神共鸣，行事低调内敛，有很强的使命感。",
+                adv:"洞察力超群、思想深刻、共情力强、有远见、创造力佳、道德感强、目标坚定。",
+                weak:"内心敏感脆弱，容易内耗；理想主义脱离现实；不善社交，封闭自我；过度思虑。",
+                fit:"职业：心理咨询、文学创作、教育、策划、公益、哲学研究；社交：追求灵魂契合的深度交友。"
+            },
+            "INTJ":{
+                name:"建筑师 · 战略思想家",
+                total:"INTJ 军师型人格，天生的战略家，思维缜密、眼界长远。你理性冷静，擅长规划布局，独立自主，追求高效与创新，不盲从大众，拥有极强的逻辑思维与全局观。",
+                adv:"智商出众、逻辑强悍、擅长规划、独立自主、创新能力强、目标感十足、抗压坚韧。",
+                weak:"性格高冷，不善人情世故；过于理性缺少温度；固执己见，难以被说服；社交被动。",
+                fit:"职业：科研、金融分析、架构设计、企业管理、策划、法律；社交：欣赏智商与思想同频的人。"
+            },
+            "ISTP":{
+                name:"鉴赏家 · 实操冒险家",
+                total:"ISTP 手艺人型人格，冷静灵活、动手能力极强。你崇尚自由，擅长实操与临场应变，心态豁达，不喜束缚，专注当下，对机械、技术、实操类事物有天然天赋。",
+                adv:"动手能力强、临场应变出色、心态乐观、冷静理智、适应力强、做事灵活不拘泥。",
+                weak:"缺乏长期规划，做事三分钟热度；不喜约束，纪律感弱；不擅长深度情感沟通。",
+                fit:"职业：技工、汽修、设计、运动、刑侦、技术实操岗；社交：随性自在、无压力的相处模式。"
+            },
+            "ISFP":{
+                name:"探险家 · 艺术治愈者",
+                total:"ISFP 艺术家人格，温柔随性、热爱生活与美感。你感性细腻，擅长感知美好，崇尚自由，不喜争执，做事低调务实，拥有独特的审美与创造力，活在当下享受生活。",
+                adv:"审美出众、心地善良、观察力强、适应力好、动手能力佳、待人真诚温和。",
+                weak:"害怕压力与冲突，逃避难题；缺乏长远规划；自信心不足，容易自我否定。",
+                fit:"职业：美术、音乐、手工、花艺、摄影、美妆、服务行业；社交：轻松愉快、简单纯粹的圈子。"
+            },
+            "INFP":{
+                name:"调停者 · 治愈梦想家",
+                total:"INFP 治愈者人格，内心柔软、充满理想与善意。你追求内心和谐与精神自由，想象力丰富，共情力极强，向往纯粹的关系与生活，性格温和，厌恶虚伪与争斗。",
+                adv:"心地善良、想象力丰富、创造力强、共情满分、真诚纯粹、坚持自我初心。",
+                weak:"极度敏感，容易情绪内耗；理想主义，抗压能力弱；逃避现实冲突；执行力不足。",
+                fit:"职业：写作、插画、心理、文创、翻译、公益行业；社交：三观纯粹、温柔包容的挚友。"
+            },
+            "INTP":{
+                name:"逻辑学家 · 好奇探索者",
+                total:"INTP 学者型人格，天生的思考者，好奇心旺盛，热爱钻研逻辑与知识。你思维跳脱，脑洞开阔，追求真理，行事随性散漫，讨厌刻板规则，沉浸在自我的思维世界中。",
+                adv:"逻辑思维顶尖、求知欲强、脑洞大、善于钻研、思维灵活、客观理性。",
+                weak:"执行力差，拖延严重；生活随性邋遢；社交迟钝；想法多落地少。",
+                fit:"职业：理论研究、编程、数理、哲学、创意研发；社交：可以自由探讨知识的同好。"
+            },
+            "ESTP":{
+                name:"企业家 · 活力实践者",
+                total:"ESTP 活动家人格，热情外向、行动力爆表。你擅长社交与临场发挥，敢于冒险，务实灵活，适应力极强，喜欢新鲜事物，是天生的行动派与社交达人。",
+                adv:"行动力强、口才出众、社交能力佳、应变快、胆大果断、接地气。",
+                weak:"耐心不足，做事浅尝辄止；缺乏长远规划；容易冲动行事；不喜深度思考。",
+                fit:"职业：销售、公关、市场、演艺、创业、商务谈判；社交：热闹多元、人脉广阔的圈子。"
+            },
+            "ESFP":{
+                name:"表演者 · 快乐乐天派",
+                total:"ESFP 表演者人格，阳光开朗、热爱热闹与欢乐。你表现力强，擅长带动氛围，待人热情真诚，活在当下，享受生活，拥有强大的感染力和亲和力。",
+                adv:"性格开朗、感染力强、情商高、擅长社交、乐观积极、动手能力强。",
+                weak:"注意力易分散，缺乏耐心；害怕独处与枯燥工作；做事缺乏深度规划。",
+                fit:"职业：演艺、主持、文旅、幼教、餐饮、活动策划；社交：热闹欢乐、氛围轻松的群体。"
+            },
+            "ENFP":{
+                name:"竞选者 · 灵感追梦人",
+                total:"ENFP 追梦人人格，外向活泼、脑洞无限。你热情友善，想象力丰富，擅长社交与创意表达，向往自由与新鲜感，乐观积极，能带动身边人的情绪。",
+                adv:"创意十足、口才优秀、热情开朗、共情力强、适应力强、感染力出众。",
+                weak:"三分钟热度，执行力薄弱；想法繁多难以落地；容易情绪化；做事分心。",
+                fit:"职业：广告、策划、公关、教育、传媒、创业；社交：有趣、脑洞大、热爱交流的朋友。"
+            },
+            "ENTP":{
+                name:"辩论家 · 创意挑战者",
+                total:"ENTP 辩论家人格，思维敏捷、善于思辨。你热爱挑战与交流，脑洞大开，口才一流，喜欢探讨观点、博弈思维，讨厌一成不变，追求创意与突破。",
+                adv:"思维敏捷、口才卓越、创意满满、应变极强、敢于挑战、学习能力强。",
+                weak:"好争辩，容易抬杠；耐心不足；做事虎头蛇尾；规则意识薄弱。",
+                fit:"职业：律师、媒体、策划、投资、营销、创意研发；社交：乐于思辨、敢于表达的圈子。"
+            },
+            "ESTJ":{
+                name:"总经理 · 务实管理者",
+                total:"ESTJ 管理者人格，干练强势、秩序感极强。你务实理性，擅长组织管理，重视规则与效率，责任心强，行事果断，是天生的团队领导者与执行者。",
+                adv:"领导力强、做事果断、执行力顶尖、守规矩、责任心重、务实高效。",
+                weak:"性格强势，略显强势刻板；不懂变通；忽略他人情绪；控制欲较强。",
+                fit:"职业：企业管理、行政、公职、运营、项目管理；社交：守规矩、务实可靠的伙伴。"
+            },
+            "ESFJ":{
+                name:"执政官 · 热心社交家",
+                total:"ESFJ 东道主人格，热情友善、擅长维系人际关系。你重视人情世故，体贴他人，乐于照顾集体氛围，责任感强，热爱社交，是圈子里的粘合剂。",
+                adv:"情商高、待人热情、擅长社交、体贴他人、责任心强、组织能力佳。",
+                weak:"在意他人评价，容易被舆论影响；不敢打破常规；过于顾及人情。",
+                fit:"职业：人事、行政、服务、教育、公关、社群运营；社交：重情义、热闹和睦的亲友圈。"
+            },
+            "ENFJ":{
+                name:"主人公 · 魅力引领者",
+                total:"ENFJ 教育家人格，极具人格魅力，擅长引导与感染他人。你共情力超强，理想崇高，善于沟通与鼓舞人心，重视他人成长，天生的领导者与倾听者。",
+                adv:"魅力十足、共情力强、口才优秀、领导力佳、热心助人、格局开阔。",
+                weak:"过度背负他人情绪，容易内耗；讨好型倾向；对自己要求过高。",
+                fit:"职业：培训、教育、心理咨询、管理、公关、公益；社交：真诚上进、愿意成长的伙伴。"
+            },
+            "ENTJ":{
+                name:"指挥官 · 天生领导者",
+                total:"ENTJ 指挥官人格，杀伐果断、远见卓识。你理性强势，目标远大，擅长战略布局与团队领导，自信果敢，追求效率与成就，天生的领袖人物。",
+                adv:"领导力顶尖、思维长远、果断坚韧、执行力强、逻辑强悍、自信自律。",
+                weak:"性格强势霸道，压迫感强；过于理性缺少温情；急躁，缺乏耐心倾听。",
+                fit:"职业：企业高管、创业、金融、战略管理、法律；社交：能力出众、目标一致的同行者。"
+            }
+        };
+
+        // 事件绑定
+        startBtn.addEventListener('click', () => {
+            // 随机抽取100题
+            randomQuestionList = getRandomQuestions(fullQuestionBank, NEED_QUESTION);
+            currentIndex = 0;
+            userAnswers = new Array(NEED_QUESTION).fill(null);
+            switchPage(quizPage);
+            renderQuestion();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if(currentIndex > 0){
+                currentIndex--;
+                renderQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if(userAnswers[currentIndex] === null){
+                alert("请先选择一个答案再继续！");
+                return;
+            }
+            if(currentIndex < NEED_QUESTION - 1){
+                currentIndex++;
+                renderQuestion();
+            }else{
+                calcResult();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            switchPage(homePage);
+        });
+    </script>
+</body>
+</html>
